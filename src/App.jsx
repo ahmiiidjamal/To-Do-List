@@ -7,11 +7,13 @@ import { Route, Routes } from 'react-router-dom'
 import { ContextForCompleted } from './assets/useContext/useContext'
 import { useState } from 'react'
 function App() {
+  localStorage.setItem("name","Ahmed")
   const [list, setName] = useState([
     // here tasks
 
   ])
 
+  
   return (
     <div className='App'>
       <h1 className='mainSentence'>My To Do List</h1>

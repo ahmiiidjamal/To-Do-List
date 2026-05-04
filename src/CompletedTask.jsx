@@ -3,7 +3,7 @@ import { useContext } from "react"
 import { ContextForCompleted } from './assets/useContext/useContext';
 import { Link } from "react-router-dom";
 export default function CompletedTask() {
-    const { list, setName } = useContext(ContextForCompleted)
+    const { list, } = useContext(ContextForCompleted)
     console.log(list)
     return (
         <div className='ComplitedTask'>

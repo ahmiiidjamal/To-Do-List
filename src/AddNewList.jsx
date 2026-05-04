@@ -1,45 +1,40 @@
 import './AddNewList.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { ContextForCompleted } from './assets/useContext/useContext';
 
 export default function AddNewList() {
     // useContext
-const {list , setName} = useContext(ContextForCompleted)
+    const { list, setName } = useContext(ContextForCompleted)
 
-    // delete function
-    function deleteTask(id) {
-        setName(list.map(item => {
-            if (item.id === id) {
-                return { ...item, result: false };
-            }
-            return item;
-        }))
-    }
-
-    // done function
-    function doneTask(id) {
-        // هون ضيف logic الإكمال
-        console.log('Done task:', id)
-        setName(list.map(itemTwo => {if(id == itemTwo.id){
-            return{...itemTwo , doneIt:true , result: false}
-        }
-        return itemTwo
-    }))
-    }
+    const [text, setText] = useState('')
+    // const [list, setName] = useState([])
 
     function changeText(e) {
         setText(e.target.value)
     }
 
-    const [text, setText] = useState('')
-    // const [list, setName] = useState([])
+
+
+
+    useEffect(() => {
+        console.log("useEffect")
+        const saved = localStorage.getItem("lists")
+        if (saved) {
+            setName(JSON.parse(saved))
+        } else {
+            setName([])
+        }
+    }, [])
 
     function addListToArray() {
         if (text.trim() !== "") {
+            const newList = [...list, { id: list.length, task: text, result: true, doneIt: false }]
+
             setText('')
-            setName([...list, { id: list.length, task: text, result: true , doneIt:false}])
+            setName(newList)
+            localStorage.setItem("lists", JSON.stringify(newList))
         }
     }
 
@@ -49,12 +44,36 @@ const {list , setName} = useContext(ContextForCompleted)
         }
     }
 
+
+
+    function deleteTask(id) {
+        const newList = list.map(item => {
+            if (item.id === id) {
+                return { ...item, result: false };
+            }
+            return item;
+        })
+        setName(newList)
+        localStorage.setItem("lists", JSON.stringify(newList))
+    }
+
+    function doneTask(id) {
+        const newList = list.map(itemTwo => {
+            if (id == itemTwo.id) {
+                return { ...itemTwo, doneIt: true, result: false }
+            }
+            return itemTwo
+        })
+        setName(newList)
+        localStorage.setItem("lists", JSON.stringify(newList))  // 👈 حفظ
+    }
+
     return (
         <div className='All'>
             <div className='form'>
-                <input className="inputList" type='text' 
-                    onChange={changeText} 
-                    onKeyDown={pressEnterToAddTask} 
+                <input className="inputList" type='text'
+                    onChange={changeText}
+                    onKeyDown={pressEnterToAddTask}
                     value={text}
                 />
                 <button className='btnAddList' onClick={addListToArray}>Add</button>
@@ -72,9 +91,9 @@ const {list , setName} = useContext(ContextForCompleted)
                 ))}
             </ul>
             <Link to='/CompletedTask'>
-            <button className='btnNextPage'>Complited Tasks</button>
+                <button className='btnNextPage'>Complited Tasks</button>
             </Link>
-            
+
         </div>
     )
 }
